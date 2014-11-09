@@ -1,0 +1,41 @@
+# Redirect to WWW
+server {
+    listen 80;
+    #listen 443 ssl;
+    #ssl_certificate ssl/generic.local.crt;
+    #ssl_certificate_key ssl/generic.local.key;
+    server_name www.generic.local;
+    return 301 $scheme://generic.local$request_uri;
+}
+
+server {
+        listen   80;
+     
+
+        root /var/www/html;
+        index index.php index.html index.htm;
+
+        server_name generic.local default_server;
+
+        location / {
+                try_files $uri $uri/ /index.html;
+        }
+
+        error_page 404 /404.html;
+
+        error_page 500 502 503 504 /50x.html;
+        location = /50x.html {
+              root /var/www/html;
+        }
+
+        # pass the PHP scripts to FastCGI server listening on 127.0.0.1:9000
+        location ~ \.php$ {
+                try_files $uri =404;
+                fastcgi_pass unix:/var/run/php5-fpm.sock;
+                fastcgi_index index.php;
+                include fastcgi_params;
+                fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+                
+        }
+
+}

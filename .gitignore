@@ -1,0 +1,15 @@
+/bootstrap/compiled.php
+/vendor
+composer.phar
+composer.lock
+.env.*.php
+.env.php
+.DS_Store
+Thumbs.db
+/nbproject/private/
+/.vagrant
+/app/config/app.php
+/public/dbadmin.php
+/app/config/database.php
+/app/config/session.php
+/vagrant/nginx/server-configs-nginx-master/sites-enabled/*

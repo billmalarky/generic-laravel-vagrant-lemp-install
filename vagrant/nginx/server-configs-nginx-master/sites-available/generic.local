@@ -1,0 +1,51 @@
+# www to non-www redirect -- duplicate content is BAD:
+# https://github.com/h5bp/html5-boilerplate/blob/5370479476dceae7cc3ea105946536d6bc0ee468/.htaccess#L362
+# Choose between www and non-www, listen on the *wrong* one and redirect to
+# the right one -- http://wiki.nginx.org/Pitfalls#Server_Name
+server {
+  # don't forget to tell on which port this server listens
+  listen 80;
+
+  # listen on the www host
+  server_name www.generic.local;
+
+  # and redirect to the non-www host (declared below)
+  return 301 $scheme://generic.local$request_uri;
+}
+
+server {
+  # listen 80 deferred; # for Linux
+  # listen 80 accept_filter=httpready; # for FreeBSD
+  listen 80;
+
+  # The host name to respond to
+  server_name generic.local;
+
+  # Path for static files
+  root /var/www/html/generic.local/public;
+
+  #Specify a charset
+  charset utf-8;
+
+  # Custom 404 page
+  error_page 404 /404.html;
+
+  # Include the basic h5bp config set
+  include h5bp/basic.conf;
+
+  # Setup locations
+  location / {
+    # Check if a file or directory index file exists, else route it to index.php.
+    try_files $uri $uri/ /index.php?$query_string;
+  }
+
+  # pass the PHP scripts to php-fpm server listening on 127.0.0.1:9000
+  location ~ \.php$ {
+    try_files $uri =404;
+    fastcgi_pass unix:/var/run/php5-fpm.sock;
+    fastcgi_index index.php;
+    include /etc/nginx-orig/fastcgi_params.default;
+    fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+  }
+
+}
